@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-console.log('--- loading prompt --> ');
+console.log("--- loading prompt --> ");
 
 /**
  * presents a user with a list of options
@@ -9,13 +9,26 @@ console.log('--- loading prompt --> ');
  * @param {string} [instructions='pick one'] - to explain the options to the user
  * @returns {string} the selected option
  */
-const chooseFromOptions = () => {
+const chooseFromOptions = (options = ["yes", "no"], instructions = "pick one") => {
   // 1. render the options message for the user
-  // 2. begin an I/O loop
-  //  a. prompt the user with the message
-  //  b. continue if the user input is empty
-  //  c. continue if the user input is not in the options array
-  //  d. ask the user to confirm their choice
+  const message = "please write an option " + '"' + options.join('" "') + '"';
+  let userConfirmed = false;
+  let input = "";
+  // an I/O loop:
+  while (!userConfirmed) {
+    //  a. prompt the user with the message
+    input = prompt(message);
+    //b. continue if the user input is empty
+    if (input === "" || input === null) continue;
+    //  b. check if the input is actually a word (hint at the bottom of this page)
+    if (options.includes(input.toLowerCase())) {
+      userConfirmed = confirm(`are you sure "${input}"`);
+    } else {
+      alert(`you must choose between this options "${options} "`);
+      continue;
+    }
+  }
+  return input;
 };
 
 {
@@ -31,31 +44,28 @@ const chooseFromOptions = () => {
   const mockUser = (values, index = 0) => () => values[index++];
 
   try {
-    prompt = mockUser(['yes']);
+    prompt = mockUser(["yes"]);
     confirm = mockUser([true]);
-    console.assert(chooseFromOptions() === 'yes', 'Test 0 a');
+    console.assert(chooseFromOptions() === "yes", "Test 0 a");
 
-    prompt = mockUser(['no']);
+    prompt = mockUser(["no"]);
     confirm = mockUser([true]);
-    console.assert(chooseFromOptions() === 'no', 'Test 0 b');
+    console.assert(chooseFromOptions() === "no", "Test 0 b");
 
-    prompt = mockUser(['x', 'y', 'b', 'c']);
+    prompt = mockUser(["x", "y", "b", "c"]);
     confirm = mockUser([false, true]);
-    console.assert(chooseFromOptions(['a', 'b', 'c']) === 'c', 'Test 1');
+    console.assert(chooseFromOptions(["a", "b", "c"]) === "c", "Test 1");
 
-    prompt = mockUser(['dogs', 'mice', 'dogs']);
+    prompt = mockUser(["dogs", "mice", "dogs"]);
     confirm = mockUser([false, true]);
-    console.assert(chooseFromOptions(['cats', 'dogs']) === 'dogs', 'Test 2');
+    console.assert(chooseFromOptions(["cats", "dogs"]) === "dogs", "Test 2");
 
-    prompt = mockUser(['white chocolte', 'white chocolate', 'dark chocolate']);
+    prompt = mockUser(["white chocolte", "white chocolate", "dark chocolate"]);
     confirm = mockUser([false, true]);
     console.assert(
-      chooseFromOptions([
-        'white chocolate',
-        'milk chocolate',
-        'dark chocolate',
-      ]) === 'dark chocolate',
-      'Test 3'
+      chooseFromOptions(["white chocolate", "milk chocolate", "dark chocolate"]) ===
+        "dark chocolate",
+      "Test 3"
     );
   } catch (err) {
     console.error(err);

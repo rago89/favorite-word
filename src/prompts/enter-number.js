@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-console.log('--- loading prompt --> ');
+console.log("--- loading prompt --> ");
 
 /**
  * prompts the user for a number, casts and validates their input
@@ -8,9 +8,28 @@ console.log('--- loading prompt --> ');
  * @param {string} [message='enter a number'] - the text displayed to the user
  * @returns {number} a number cast from the user input (never NaN)
  */
-const enterNumber = () => {
+const enterNumber = (message = "please enter a number") => {
+  let userConfirmed = false;
+  let input = "";
+  let number = NaN;
   // an I/O loop:
-  //  a. prompt the user for a number
+  while (!userConfirmed) {
+    //  a. prompt the user for a number
+    input = prompt(message);
+    // make sure user input a number
+    if (input === "" || input === null) continue;
+    //  c. if it is a number, return the user input (make sure it's type is 'number'!)
+    number = Number(input);
+    if (!Number.isNaN(number)) {
+      //  c. if it is a word, return the user input
+      userConfirmed = confirm(`do you want to enter this number "${input}"`);
+    } else {
+      alert("is not a number");
+    }
+    //  d. otherwise prompt the user again
+  }
+  return number;
+
   //  b. check if the input is actually a number
   //  c. if it is a number, return the user input (make sure it's type is 'number'!)
   //  d. otherwise prompt the user again
@@ -29,21 +48,21 @@ const enterNumber = () => {
   const mockUser = (values, index = 0) => () => values[index++];
 
   try {
-    prompt = mockUser(['0', '1']);
+    prompt = mockUser(["0", "1"]);
     confirm = mockUser([false, true]);
-    console.assert(enterNumber() === 1, 'Test 1');
+    console.assert(enterNumber() === 1, "Test 1");
 
-    prompt = mockUser(['3']);
+    prompt = mockUser(["3"]);
     confirm = mockUser([true]);
-    console.assert(enterNumber() === 3, 'Test 2');
+    console.assert(enterNumber() === 3, "Test 2");
 
-    prompt = mockUser(['x', '2', '1']);
+    prompt = mockUser(["x", "2", "1"]);
     confirm = mockUser([false, true]);
-    console.assert(enterNumber() === 1, 'Test 3');
+    console.assert(enterNumber() === 1, "Test 3");
 
-    prompt = mockUser(['a', '1', 'b', '2']);
+    prompt = mockUser(["a", "1", "b", "2"]);
     confirm = mockUser([false, true]);
-    console.assert(enterNumber() === 2, 'Test 4');
+    console.assert(enterNumber() === 2, "Test 4");
   } catch (err) {
     console.error(err);
   }
